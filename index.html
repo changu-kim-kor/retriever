@@ -17,6 +17,18 @@
         .bar { background: #f59e0b; height: 100%; width: 0%; transition: width 0.3s; }
         .result-type { font-size: 22px; font-weight: bold; color: #b45309; margin: 20px 0 10px; }
         .badge { display: inline-block; background: #fef3c7; color: #d97706; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        
+        /* 결과 이미지 스타일 */
+        .result-img { 
+            width: 100%; 
+            max-width: 240px; 
+            height: auto; 
+            border-radius: 16px; 
+            margin: 15px auto; 
+            display: block; 
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
@@ -43,6 +55,10 @@
     <div id="result-page" class="hidden">
         <div class="badge">YOUR TYPE</div>
         <h1>🐾 나의 리트리버 성격 결과</h1>
+        
+        <!-- 결과 이미지가 표시되는 위치 -->
+        <img id="result-img" class="result-img" src="" alt="리트리버 결과 이미지">
+        
         <div id="result-type" class="result-type">결과 유형</div>
         <p id="result-desc" style="color: #4b5563; line-height: 1.6; font-size: 15px; word-break: keep-all;"></p>
         <button class="btn" style="background:#f59e0b; color:white; border:none; margin-top:25px;" onclick="resetQuiz()">다시 테스트하기</button>
@@ -51,9 +67,6 @@
 
 <script>
     // 질문 구조 (각 축당 3개씩 총 9문항)
-    // Q1~Q3: 규칙(R) vs 유연(F)
-    // Q4~Q6: 사람(P) vs 독립(I)
-    // Q7~Q9: 에너지(E) vs 차분(C)
     const questions = [
         {
             q: "산책 중 길가에서 흥미로운 냄새나 장난감을 발견했을 때?",
@@ -102,38 +115,48 @@
         }
     ];
 
+    // 결과 데이터 (각 유형별 이미지 경로 'img' 항목 추가)
+    // 💡 아래 img 경로("images/rpe.png" 등)를 실제 파일 경로나 웹 이미지 URL로 바꿔주세요.
     const results = {
         "RPE": {
             title: "🦮 열정 만렙 베테랑 리트리버",
-            desc: "원칙을 철저히 지키면서도 사람과의 교감에 열정적인 에이스 안내견! 높은 책임감과 따뜻한 친화력으로 누구에게나 깊은 신뢰를 주는 리더 타입입니다."
+            desc: "원칙을 철저히 지키면서도 사람과의 교감에 열정적인 에이스 안내견! 높은 책임감과 따뜻한 친화력으로 누구에게나 깊은 신뢰를 주는 리더 타입입니다.",
+            img: "veteran.png"
         },
         "RPC": {
             title: "💛 다정다감 힐링 리트리버",
-            desc: "규칙을 잘 지키며 차분하게 사람의 마음을 다독이는 따뜻한 힐러! 조용하지만 깊은 애정으로 주변 사람들에게 항상 평온과 위로를 전달합니다."
+            desc: "규칙을 잘 지키며 차분하게 사람의 마음을 다독이는 따뜻한 힐러! 조용하지만 깊은 애정으로 주변 사람들에게 항상 평온과 위로를 전달합니다.",
+            img: "healing.png"
         },
         "RIE": {
             title: "🦉 브레인 해결사 리트리버",
-            desc: "원칙을 바탕으로 빠르고 명석하게 상황을 판단하는 지능파! 독립적이면서도 에너지 넘치게 돌발 상황을 해결해내는 스마트한 파트너입니다."
+            desc: "원칙을 바탕으로 빠르고 명석하게 상황을 판단하는 지능파! 독립적이면서도 에너지 넘치게 돌발 상황을 해결해내는 스마트한 파트너입니다.",
+            img: "brain.png"
         },
         "RIC": {
             title: "📐 철두철미 원칙주의 리트리버",
-            desc: "조용하고 차분하게 주어진 임무와 약속을 100% 완수하는 신중파! 흔들림 없는 정석대로의 행동으로 가장 안정감을 주는 든든한 존재입니다."
+            desc: "조용하고 차분하게 주어진 임무와 약속을 100% 완수하는 신중파! 흔들림 없는 정석대로의 행동으로 가장 안정감을 주는 든든한 존재입니다.",
+            img: "fm.png"
         },
         "FPE": {
             title: "🎾 호기심 에너자이저 리트리버",
-            desc: "틀에 매이지 않는 유연함과 사람을 좋아하는 사랑스러움이 더해진 활력소! 넘치는 에너지와 호기심으로 주변 모두를 미소 짓게 만듭니다."
+            desc: "틀에 매이지 않는 유연함과 사람을 좋아하는 사랑스러움이 더해진 활력소! 넘치는 에너지와 호기심으로 주변 모두를 미소 짓게 만듭니다.",
+            img: "energizer.png"
         },
         "FPC": {
             title: "🐶 애교만점 껌딱지 리트리버",
-            desc: "여유롭고 느긋하지만 주인 옆 1cm가 지정석인 해바라기! 따뜻하고 둥글둥글한 성격으로 보는 사람의 마음을 사르르 녹이는 사랑둥이입니다."
+            desc: "여유롭고 느긋하지만 주인 옆 1cm가 지정석인 해바라기! 따뜻하고 둥글둥글한 성격으로 보는 사람의 마음을 사르르 녹이는 사랑둥이입니다.",
+            img: "lovely.png"
         },
         "FIE": {
             title: "🐾 엉뚱발랄 마이웨이 리트리버",
-            desc: "자유로운 영혼과 통통 튀는 개성을 가진 탐색가! 자신만의 호기심을 따라 탐험하며 예상치 못한 엉뚱한 매력으로 즐거움을 줍니다."
+            desc: "자유로운 영혼과 통통 튀는 개성을 가진 탐색가! 자신만의 호기심을 따라 탐험하며 예상치 못한 엉뚱한 매력으로 즐거움을 줍니다.",
+            img: "myway.png"
         },
         "FIC": {
-            title: "🥐 여유만만 긍정 미식가 리트리버",
-            desc: "어떤 상황에서도 조급해하지 않는 긍정왕! 느긋하게 자유와 여유를 즐기며 나만의 행복을 찾아가는 평화로운 힐링 타입입니다."
+            title: "🥐 여유만만 긍정 리트리버",
+            desc: "어떤 상황에서도 조급해하지 않는 긍정왕! 느긋하게 자유와 여유를 즐기며 나만의 행복을 찾아가는 평화로운 힐링 타입입니다.",
+            img: "pos.png"
         }
     };
 
@@ -173,7 +196,7 @@
         document.getElementById('quiz-page').classList.add('hidden');
         document.getElementById('result-page').classList.remove('hidden');
 
-        // 3축 결과 계산 (축당 3개 질문이므로 동점 없이 2:1 이상으로 판별됨)
+        // 3축 결과 계산 (동점 없이 판별)
         const axis1 = scores.R > scores.F ? 'R' : 'F';
         const axis2 = scores.P > scores.I ? 'P' : 'I';
         const axis3 = scores.E > scores.C ? 'E' : 'C';
@@ -181,8 +204,10 @@
         const resultCode = axis1 + axis2 + axis3;
         const result = results[resultCode];
 
+        // 결과 값 연결 (텍스트 및 이미지)
         document.getElementById('result-type').innerText = result.title;
         document.getElementById('result-desc').innerText = result.desc;
+        document.getElementById('result-img').src = result.img; // 이미지 주소 전달
     }
 
     function resetQuiz() {
