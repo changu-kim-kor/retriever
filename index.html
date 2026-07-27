@@ -26,14 +26,14 @@
     <div id="start-page">
         <div style="font-size: 50px; margin-bottom: 10px;">🦮</div>
         <h1>나의 안내견 리트리버 유형은?</h1>
-        <p class="sub-title">6가지 질문을 통해 나와 가장 닮은<br>8가지 안내견 리트리버 성격을 찾아보세요!</p>
+        <p class="sub-title">9가지 질문을 통해 나와 가장 닮은<br>8가지 안내견 리트리버 성격을 찾아보세요!</p>
         <button class="btn" style="background:#f59e0b; color:white; border:none; font-size:16px;" onclick="startQuiz()">테스트 시작하기</button>
     </div>
 
     <!-- 2. 질문 화면 -->
     <div id="quiz-page" class="hidden">
         <div class="progress"><div id="bar" class="bar"></div></div>
-        <div id="question-number" class="badge">질문 1 / 6</div>
+        <div id="question-number" class="badge">질문 1 / 9</div>
         <h2 id="question" style="font-size: 18px; color: #1f2937; min-height: 55px; margin-top:0;">질문 내용</h2>
         <button class="btn" onclick="selectOption('A')" id="optA">선택지 A</button>
         <button class="btn" onclick="selectOption('B')" id="optB">선택지 B</button>
@@ -50,7 +50,10 @@
 </div>
 
 <script>
-    // 질문 구조: Q1~Q2 (원칙 R vs 유연 F), Q3~Q4 (사람 P vs 독립 I), Q5~Q6 (에너지 E vs 차분 C)
+    // 질문 구조 (각 축당 3개씩 총 9문항)
+    // Q1~Q3: 규칙(R) vs 유연(F)
+    // Q4~Q6: 사람(P) vs 독립(I)
+    // Q7~Q9: 에너지(E) vs 차분(C)
     const questions = [
         {
             q: "산책 중 길가에서 흥미로운 냄새나 장난감을 발견했을 때?",
@@ -63,6 +66,11 @@
             b: { text: "상황에 맞춰 부드럽고 유연하게 우회로를 찾는다.", trait: "F" }
         },
         {
+            q: "기존에 정해둔 이동 경로에 갑작스러운 변수가 생겼을 때?",
+            a: { text: "원래 지침과 매뉴얼을 다시 점검하며 보수적으로 행동한다.", trait: "R" },
+            b: { text: "순발력을 발휘해 그 자리에서 즉흥적으로 최선의 길을 선택한다.", trait: "F" }
+        },
+        {
             q: "새로운 사람이나 다른 강아지가 나에게 다가올 때?",
             a: { text: "반갑게 꼬리를 치며 친근하게 교감하고 인사를 나눈다.", trait: "P" },
             b: { text: "굳이 먼저 다가지 않고 차분히 내 영역과 페이스를 유지한다.", trait: "I" }
@@ -73,6 +81,11 @@
             b: { text: "내가 좋아하는 아늑한 명당에서 혼자 여유를 만끽할 때", trait: "I" }
         },
         {
+            q: "열심히 일한 뒤 보상을 받을 때 더 힘이 나는 순간은?",
+            a: { text: "주인이 나를 꼭 안아주고 다정하게 쓰다듬어줄 때", trait: "P" },
+            b: { text: "내가 좋아하는 특식 간식과 방해받지 않는 자유 시간을 얻을 때", trait: "I" }
+        },
+        {
             q: "신나는 야외 활동이나 자유 시간이 주어졌을 때 나의 상태는?",
             a: { text: "활기차고 에너지 넘치게 온몸으로 뛰어놀 준비 완료!", trait: "E" },
             b: { text: "과하게 흥분하지 않고 조용하고 평온하게 주변을 즐김", trait: "C" }
@@ -81,6 +94,11 @@
             q: "미션 성공 후 맛있는 간식 보상을 받았을 때 표현 방식은?",
             a: { text: "기쁨을 참지 못해 점프하거나 온몸으로 신나게 표현한다.", trait: "E" },
             b: { text: "꼬리를 느긋하게 흔들며 차분하고 깊은 만족감을 표한다.", trait: "C" }
+        },
+        {
+            q: "주변 분위기가 시끌벅적하고 아주 신나게 고조될 때 나의 반응은?",
+            a: { text: "나도 같이 신나서 텐션이 올라가고 몸이 먼저 움직인다.", trait: "E" },
+            b: { text: "한걸음 물러서서 차분하게 상황을 관망하며 평정심을 유지한다.", trait: "C" }
         }
     ];
 
@@ -155,10 +173,10 @@
         document.getElementById('quiz-page').classList.add('hidden');
         document.getElementById('result-page').classList.remove('hidden');
 
-        // 3축 결과 계산
-        const axis1 = scores.R >= scores.F ? 'R' : 'F';
-        const axis2 = scores.P >= scores.I ? 'P' : 'I';
-        const axis3 = scores.E >= scores.C ? 'E' : 'C';
+        // 3축 결과 계산 (축당 3개 질문이므로 동점 없이 2:1 이상으로 판별됨)
+        const axis1 = scores.R > scores.F ? 'R' : 'F';
+        const axis2 = scores.P > scores.I ? 'P' : 'I';
+        const axis3 = scores.E > scores.C ? 'E' : 'C';
 
         const resultCode = axis1 + axis2 + axis3;
         const result = results[resultCode];
